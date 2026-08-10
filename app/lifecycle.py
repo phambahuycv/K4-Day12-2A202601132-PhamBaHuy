@@ -45,7 +45,11 @@ class ShutdownGuard:
         tham số này. Không làm gì nặng ở đây (không gọi mạng, không ghi file)
         — handler chạy xen giữa bytecode.
         """
-        raise NotImplementedError("TODO (CP4): cài đặt start_draining")
+        self.draining = True
+        previous = self._previous.get(signum)
+        if callable(previous):
+            previous(signum, frame)
+        # raise NotImplementedError("TODO (CP4): cài đặt start_draining")
 
     def arm(self) -> None:
         """Đăng ký handler cho SIGTERM và SIGINT, nhớ lại handler cũ.
@@ -57,7 +61,11 @@ class ShutdownGuard:
 
         SIGTERM: orchestrator yêu cầu tắt. SIGINT: bạn bấm Ctrl+C.
         """
-        raise NotImplementedError("TODO (CP4): cài đặt arm")
+        self._previous[signal.SIGTERM] = signal.getsignal(signal.SIGTERM)
+        self._previous[signal.SIGINT] = signal.getsignal(signal.SIGINT)
+        signal.signal(signal.SIGTERM, self.start_draining)
+        signal.signal(signal.SIGINT, self.start_draining)
+        # raise NotImplementedError("TODO (CP4): cài đặt arm")
 
 
 # Một instance dùng chung cho cả app

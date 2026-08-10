@@ -68,3 +68,12 @@ class ChatStore:
     def reset(self, client_id: str) -> None:
         """CHO SẴN — xóa lịch sử của một client."""
         self.client.delete(self._key(client_id))
+
+    def append_message(r: redis.Redis, user_id: str, role: str, content: str):
+        key = f"history:{user_id}"
+        message = json.dumps({"role": role, "content": content})
+        r.rpush(key, message)
+
+    def get_history(r: redis.Redis, user_id: str) -> list:
+        key = f"history:{user_id}"
+        return [json.loads(m) for m in r.lrange(key, 0, -1)]

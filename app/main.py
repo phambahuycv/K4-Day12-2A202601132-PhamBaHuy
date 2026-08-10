@@ -119,9 +119,14 @@ def readyz(store: ChatStore = Depends(get_store)):
             content={"status": "draining"},
         )
     redis_ok = store.ping()
+    if not redis_ok:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "not ready", "redis": False},
+        )
     return {
-        "status": "ready" if redis_ok else "not ready",
-        "redis": redis_ok,
+        "status": "ready",
+        "redis": True,
     }
     #raise NotImplementedError("TODO (CP4): cài đặt /readyz")
 
