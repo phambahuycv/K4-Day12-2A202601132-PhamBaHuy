@@ -148,7 +148,6 @@ curl -X POST https://<domain>/chat \
 | 503 | chưa ready, hoặc đang tắt dần |
 
 ---
-
 ## Cài Đặt
 
 ### Yêu cầu
