@@ -35,4 +35,16 @@ def emit(event: str, severity: str = "INFO", **fields) -> str:
         >>> emit("chat_completed", client_id="sv01", usd_cost=0.0001)
         '{"event": "chat_completed", "severity": "INFO", "ts": "...", ...}'
     """
-    raise NotImplementedError("TODO (CP1): cài đặt emit")
+
+    #{"timestamp": "2026-08-09T10:30:00Z", "level": "INFO", "event": "ask_completed", "user_id": "sv01", "latency_ms": 142}
+    log_entry = {
+        "event": event,
+        "ts": utc_now_iso(),
+        "severity": severity.upper(),
+        **fields,
+    }
+
+    log_line = json.dumps(log_entry, ensure_ascii=False)
+    print(log_line)
+    return log_line
+    #raise NotImplementedError("TODO (CP1): cài đặt emit")

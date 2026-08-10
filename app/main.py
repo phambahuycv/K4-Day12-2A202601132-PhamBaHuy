@@ -92,7 +92,13 @@ def healthz():
     lời câu hỏi "có cần restart container này không?". Nếu nó phụ thuộc
     Redis, Redis chết một nhịp là cả cụm container bị restart theo.
     """
-    raise NotImplementedError("TODO (CP1/CP4): cài đặt /healthz")
+    if shutdown_guard.draining:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "draining"},
+        )
+    return {"status": "ok", "service": SERVICE_NAME, "version": SERVICE_VERSION}
+    #raise NotImplementedError("TODO (CP1/CP4): cài đặt /healthz")
 
 
 @app.get("/readyz")
@@ -107,7 +113,17 @@ def readyz(store: ChatStore = Depends(get_store)):
     Khác /healthz ở chỗ: endpoint này ĐƯỢC PHÉP kiểm tra dependency. Load
     balancer dùng nó để quyết định có đẩy request vào instance này không.
     """
-    raise NotImplementedError("TODO (CP4): cài đặt /readyz")
+    if shutdown_guard.draining:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "draining"},
+        )
+    redis_ok = store.ping()
+    return {
+        "status": "ready" if redis_ok else "not ready",
+        "redis": redis_ok,
+    }
+    #raise NotImplementedError("TODO (CP4): cài đặt /readyz")
 
 
 # ─────────────────────────────────────────────────────────────
