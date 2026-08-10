@@ -101,6 +101,11 @@ def grade_exercises() -> tuple[int, Path | None]:
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
     print("=" * 74)
     print("CHẤM ĐIỂM TỰ ĐỘNG — K4 Ngày 12: Hạ Tầng Cloud & Deployment")
     print("=" * 74)
